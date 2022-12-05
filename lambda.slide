@@ -1,0 +1,414 @@
+# λ-calculus
+Introduction to λ-calculus
+5 Dec 2022
+
+YinYin Chiu
+Software Enginner, Oursky
+yinyinchiu@oursky.com
+
+## Before that
+
+Let's start with a simple function
+
+`const I = a => a`
+
+`I(1) = 1`
+
+`I(2) = 2`
+
+`I(I) = I`
+
+## λa.a
+
+I-combinator (Idiot)
+- Take an input a and return an output a
+
+- λ
+  - I := λa.a
+- JS
+  - I = a => a
+
+## λ?
+
+**λ**a.a
+
+- Function signifier
+
+λ**a**.a
+
+- Parameter variable
+
+λa.a
+
+- Dot
+
+λa.**a**
+
+- Return expression
+
+**λa.a**
+
+- Lambda abstraction
+
+## λ-calculus
+
+- Introduced by Alonzo Church
+
+- Very tiny language framework
+
+- Three main components
+  - variable
+  - abstraction (function definition)
+  - application (function application / calling a function)
+
+
+```
+expression ::= variable                 <- variable
+             | expression expression    <- application
+             | λ variable . expression  <- abstraction
+             | ( expression )           <- grouping
+```
+
+^^^ This is the entire λ-calculus ^^^
+
+## λ vs JS - Variables
+
+- λ: x
+  - Variables in λ are immutable
+  - No assignment, i.e. (a = 1)
+- JS: x
+
+## λ vs JS - Application
+
+---
+
+```
+    λ                     JS
+   f a b                 f(a)
+```
+
+All function in λ-calculus is unary function
+
+```
+    λ                     JS
+  f a b                 f(a)(b)
+  (f a) b               f(a)(b)
+    -Left associative
+  f (a b)               f(a(b))
+```
+
+## λ vs JS - Abstractions
+
+---
+
+```
+    λ                     JS
+  λa.b                   a => b
+  λa.b x                 a => b(x)
+  λa.(b x)               a => (b(x))
+  (λa.b) x               (a => b)(x)
+  λa.λb.a                a => b => a / add = a => b => a + b / add(1)(2) instead of add(1, 2)
+  ^^^^^^^^
+    Currying
+```
+
+---
+
+```
+  λa.λb.λc.a       a => b => c => a
+= λabc.a           a => b => c => a  X (a, b, c) => a
+```
+
+## α-conversion & α-equivalent
+
+Variable name doesn't matter
+
+`λa.a = λb.b = λc.c = λd.d`
+
+## β-reduction
+
+- Probaly most complex thing in the λ-calculus syntax
+- but it just means tracing the logic, taking a function and apply it to its augments
+
+Consider ((λa.a)λb.λc.b)(x)λe.f,
+
+
+## β-reduction
+
+((λa.a)λb.λc.b)(x)λe.f
+
+( (**λa.a**) **λb.λc.b**)(x)λe.f => (λb.λc.b)(x)λe.f
+
+(**λb.λc.b**)(**x**)λe.f => (λc.x)λe.f
+
+(**λc.x**)**λe.f** => x
+
+i.e. ((λa.a)λb.λc.b)(x)λe.f = x
+
+x is the β-normal form of ((λa.a)λb.λc.b)(x)λe.f
+- A fancy way to say it is fully evaluated
+
+## M-combinator (Mockingbird)
+
+`M := λf.ff`
+
+- JS: `M = f => f(f)`
+
+`M I = I I = I`
+
+What about `M M`?
+
+## M-combinator (Mockingbird)
+
+`M M = M M = M M = M M = M M = M M = M M ....`
+
+There is no general way to know if a λ-expression has a β-normal form
+- Halting problems
+
+## K-combinator (Kestrel)
+
+`K := λa.λb.a`
+
+- JS: `K = a => b => a`
+
+`K I M = I`
+
+`K M I = M`
+
+`K K I = K`
+
+---
+
+`K3 = K(3)`
+
+`K3(1) = 3`
+
+`K3(I) = 3`
+
+`K3(M) = 3`
+
+## K-combinator (Kestrel)
+
+`K := λa.λb.a`
+
+`K I x = I`
+
+---
+
+What about `K I x y`?
+
+`K I x y = I y = y`
+
+^^^
+
+KI-combinator
+
+## KI-combinator (Kite)
+
+`KI := λa.λb.b`
+
+- JS: `KI = a => b => b`
+
+`KI` can be manually defined as `λa.λb.b`, it can also be defined as `K I`
+
+Small combinators can combine together and build a much strong/interesting combinator
+
+---
+
+`KI M I = I`
+`KI M M = I`
+`KI M K = K`
+`KI K M = M`
+
+## Combinators
+
+So far we have
+
+- I
+- M
+- K
+- KI
+
+What is a combinator?
+
+Combinators are functions without free variables
+
+`λa.a` // Combinator
+
+`λa.b` // Not Combinator
+
+`λab.a` // Combinator
+
+`λabc.c(λe.b)` // Combinator
+
+## C-combinator (Cardinal)
+
+`C := λfab.fba`
+
+- JS: `C = f => a => b => f(b)(a)`
+
+`C K I M = K M I = M`
+
+Sound familiar? `X I M = M`
+
+`CK = KI = K I`
+
+## Everything can be a function in λ-calculus
+
+How can we express `!(x == y) || (a && b)` in λ-calculus?
+
+## Boolean
+
+Let's start with a simple use-case
+
+`const result = bool ? expr1 : expr2`
+
+`Result := someFunc expr1 expr2`
+
+if 'true', then expr1
+
+if 'false', them expr2
+
+Look familiar?
+
+## Boolean
+
+We already have boolean
+
+`TRUE := K`
+
+`FALSE := KI = C K`
+
+## Not (!)
+
+How can we implement not?
+
+if p is 'true', not(p) is 'false'
+
+if p is 'false', not(p) is 'true'
+
+
+Look familiar again?
+
+## Not (!)
+
+`NOT := λp.pFT`
+
+`NOT T = T F T = K F T = F`
+
+`NOT F = F F T = KI F T = T`
+
+---
+
+OR
+
+`NOT := λp.pFT = C`
+
+## And
+
+`AND := λpq.p??`
+
+if p is 'false', then f
+
+`AND := λpq.p?F`
+
+if p is 'true', then check q is true
+
+`AND := λpq.pqF`
+
+If we don't want to hard code F, we can use p
+
+At a result,
+
+`AND := λpq.pqp`
+
+## Or
+
+`OR := λpq.p??`
+
+if p is 'true', then 'true
+
+`OR := λpq.pT?`
+
+if p is 'false', then check q is true
+
+`OR := λpq.pTq`
+
+If we don't want to hard code T, we can use p
+
+At a result,
+
+`OR := λpq.ppq`
+
+## Or, Cont
+
+`(λpq.ppq)xy = xxy`
+
+^^^^^^^^^
+
+`Mxy = xxy`
+
+Therefore, `(λpq.ppq)xy = xxy = Mxy` -> `OR := M*`
+
+## λpq.p(qTF)(qFT)
+
+if p & q are booleans, what does above expression do?
+
+```
+        T --> T
+       /
+      q
+     / \
+    T   F --> F
+   /
+  p
+   \
+    F   T --> F
+     \ /
+      q
+       \
+        F --> T
+```
+
+## Boolean Equality
+
+`qTF = q`
+
+`qFT = NOT q`
+
+So,
+
+`BEQ := λpq.p(qTF)(qFT) = λpq.pq(Not q)`
+
+`BEQ := λpq.pq(NOT q)`
+
+## Church Boolean
+
+What we have now
+
+```
+TRUE       λab.a
+FALSE      λab.b
+NOT        λp.pFT
+AND        λpq.pqp
+OR         λpq.ppq
+BEQ        λpq.pq(NOT q)
+```
+
+## (One of) De Morgan's laws
+
+`!(p && q) == !p || !q`
+
+`BEQ (NOT(AND p q)) (OR (NOT p) (NOT q))`
+
+`(λxy.x y ((λfab.fba) y))((λfab.fba) ((λxy.xyx) p q))((λf.ff) ((λfab.fba) p) ((λfab.fba) q))`
+
+## Next time
+
+Church numerals
+
+## Reference
+
+- [https://en.wikipedia.org/wiki/Lambda_calculus](https://en.wikipedia.org/wiki/Lambda_calculus)
+- [https://www.youtube.com/watch?v=3VQ382QG-y4](https://www.youtube.com/watch?v=3VQ382QG-y4)
+    - Great presentation

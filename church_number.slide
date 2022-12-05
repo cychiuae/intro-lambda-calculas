@@ -1,0 +1,135 @@
+# Church numerals
+
+YinYin Chiu
+Software Enginner, Oursky
+yinyinchiu@oursky.com
+
+## Church numerals
+
+The way λ-calculus represents number is a function that maps any function f to its n-fold composition
+
+`N0 := λf.λx.x`
+`N1 := λf.λx.fx`
+`N2 := λf.λx.f(fx)`
+`N3 := λf.λx.f(f(fx))`
+
+Examples:
+
+`N3 NOT T = F`
+
+Note that `N0 := λf.λx.x = λab.b = KI = F`
+
+## +1?
+
+SUCC N0 = N1
+SUCC N1 = N2
+SUCC (SUCC N1) = N3
+...
+
+And this is [Peano numbers](https://wiki.haskell.org/Peano_numbers)
+
+## SUCC
+
+Consider `SUCC N1`,
+
+`SUCC N1 = SUCC λfx.fx = λfx.f(fx)`
+
+We need to apply one more `f`,
+
+`SUCC := λnfx.f(nfx)`
+
+## SUCC - Examples
+
+0 +1 = 1
+```
+SUCC N0 = (λnfx.f(nfx)) (λfx.x)
+        = λfx.f((λfx.x)fx)
+        = λfx.f((λx.x)x)
+        = λfx.fx
+        = N1
+```
+
+1 +1 = 2
+```
+SUCC N1 = (λnfx.f(nfx)) (λfx.fx)
+        = λfx.f((λfx.fx) f x)
+        = λfx.f((λx.fx) x)
+        = λfx.f(fx)
+        = N2
+```
+
+## B-combinator (Blurbird)
+
+`B := λfga.f(ga)`
+
+What does it do?
+
+It may be clearer in JS
+
+`const B = f => g => a => f(g(a))`
+
+It is the `compose` function
+
+Examples:
+
+`B NOT NOT T = T`
+
+## Consider back SUCC
+
+
+`SUCC := λnfx.f(nfx)`
+- JS: `succ = n => f => x => f(n(f)(a))`
+
+If we `let g = n(f)`, then `f(n(f)(a)) = f(g(a))`.
+
+`SUCC :=  λnf.Bf(nf)`
+
+## Add
+
+`ADD := λab.?`
+
+`ADD N1 N5 = SUCC N5`
+
+`ADD N2 N5 = SUCC (SUCC N5)`
+
+`ADD N3 N5 = SUCC (SUCC (SUCC N5))`
+
+If we continue the pattern, we can use acutally it is a n-fold function composition.
+
+`f(g(h(a))) = (f . g . h) a`
+
+`ADD N3 N5 = SUCC (SUCC (SUCC N5)) = (SUCC . SUCC . SUCC) N5`
+
+By the definition of church numerals,
+
+`ADD N3 N5 = (SUCC . SUCC . SUCC) N5 = N3 SUCC N5`
+
+## Add
+
+`ADD := λab.a SUCC b`
+
+## Multiplication
+
+`MULT := λnk.?`
+
+Consider 2 x 3,
+
+```
+MUTL N2 N3 = N6
+MUTL N2 N3 f a = (f . f . f . f . f . f) a
+               = ((f . f . f) . (f . f . f)) a
+               = ((N3 f) . (N3 f)) a
+               = N2 (N3 f) a
+
+MUTL N2 N3 f = N2 (N3 f)
+             = (N2 . M3) f
+             = B N2 N3 f
+
+MUTL N2 N3 f = B N2 N3 f
+MUTL N2 N3 = B N2 N3
+MUTL = B
+```
+
+OMG, Multiplication is just composition!
+
+`MULT := B`

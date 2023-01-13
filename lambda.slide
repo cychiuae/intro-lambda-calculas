@@ -1,9 +1,9 @@
 # λ-calculus
 Introduction to λ-calculus
-5 Dec 2022
+13 Jan 2023
 
 YinYin Chiu
-Software Enginner, Oursky
+Software Engineer, Oursky
 yinyinchiu@oursky.com
 
 ## Before that
@@ -163,7 +163,16 @@ What about `M M`?
 `M M = M M = M M = M M = M M = M M = M M ....`
 
 There is no general way to know if a λ-expression has a β-normal form
-- Halting problems
+- Halting problem
+
+In fact λ-calculus was invented to solve a problem call Entscheidungsproblem, i.e. decision problem, and
+Halting problem is one of them
+
+---
+
+The problem asks for an algorithm that considers, 
+
+as input, a statement and answers "Yes" or "No" according to whether the statement is universally valid, i.e., valid in every structure satisfying the axioms
 
 ## K-combinator (Kestrel)
 
@@ -403,6 +412,43 @@ BEQ        λpq.pq(NOT q)
 
 `(λxy.x y ((λfab.fba) y))((λfab.fba) ((λxy.xyx) p q))((λf.ff) ((λfab.fba) p) ((λfab.fba) q))`
 
+## Fun Fact
+
+We have seen we can build some useful combinators from some basic combinators.
+
+I
+K
+C
+KI = K I
+CK = C K
+
+How many combinators we actually need for building up the whole framework?
+
+## Fun Fact
+
+Answer: 2
+
+SKI combinators
+
+`S := λxyz((xz)(yz))`
+
+`K := λqi.q`
+
+---
+
+`I := SKK`
+
+`T := K`
+
+`F := SK`
+
+`NOT := S(SI(KF))(KT)`
+
+`OR := SI(KT)`
+
+`AND := SS(K(KF))`
+
+
 ## Next time
 
 Church numerals
@@ -412,3 +458,4 @@ Church numerals
 - [https://en.wikipedia.org/wiki/Lambda_calculus](https://en.wikipedia.org/wiki/Lambda_calculus)
 - [https://www.youtube.com/watch?v=3VQ382QG-y4](https://www.youtube.com/watch?v=3VQ382QG-y4)
     - Great presentation
+- [https://en.wikipedia.org/wiki/SKI_combinator_calculus](https://en.wikipedia.org/wiki/SKI_combinator_calculus)
